@@ -1,0 +1,78 @@
+<!-- one post with its comments. -->
+<article class="post card">
+    <h3>{{ post.title }}</h3>
+
+    {% if post.is_pinned %}
+        <p class="pinned_label">Pinned post</p>
+    {% endif %}
+
+    <p class="post_meta">
+        Posted by {{ post.author.username }} · {{ post.created_at|date:"M j, Y, g:i a" }}
+        {% if post.group %} · in <a href="{% url 'group_detail' post.group.slug %}">{{ post.group.name }}</a>{% endif %}
+        {% if post.event %} · at <a href="{% url 'event_detail' post.event.pk %}">{{ post.event.title }}</a>{% endif %}
+    </p>
+    <p class="post_body">{{ post.body|linebreaksbr }}</p>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'toggle_post_bookmark' post.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit">{% if post.is_bookmarked %}Remove bookmark{% else %}Bookmark as important{% endif %}</button>
+        </form>
+    {% else %}
+        <p class="post_meta"><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to bookmark this post.</p>
+    {% endif %}
+
+    {% if user.is_staff %}
+
+        <form method="post" action="{% url 'toggle_post_pin' post.id %}">
+            {% csrf_token %}
+            <button type="submit">{% if post.is_pinned %}Unpin post{% else %}Pin post{% endif %}</button>
+        </form>
+
+        <form method="post" action="{% url 'remove_post' post.id %}" onsubmit="return confirm('Take down this post and all of its comments?');">
+            {% csrf_token %}
+            <button type="submit">Take down post</button>
+        </form>
+    {% endif %}
+
+    <section class="comments">
+        <h4>Comments ({{ post.comments.count }})</h4>
+        {% for comment in post.comments.all %}
+            <article class="comment">
+                <p>{{ comment.body|linebreaksbr }}</p>
+                <p class="post_meta">{{ comment.author.username }} · {{ comment.created_at|date:"M j, Y, g:i a" }}</p>
+
+                {% if user.is_staff %}
+                    <form method="post" action="{% url 'remove_comment' comment.id %}" onsubmit="return confirm('Remove this comment?');">
+                        {% csrf_token %}
+                        <button type="submit">Remove comment</button>
+                    </form>
+                {% endif %}
+
+            </article>
+        {% empty %}
+            <p class="post_meta">No comments yet.</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            {% if not post.event or post.event.can_discuss and post.is_event_member %}
+                <form method="post" action="{% url 'create_comment' post.id %}">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit">Comment</button>
+                </form>
+            {% elif post.event %}
+                {% if post.event.can_discuss %}
+                    <p class="post_meta">Join this event to comment.</p>
+                {% else %}
+                    <p class="post_meta">Event discussions are closed.</p>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if not post.event or post.event.can_discuss %}
+                <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to comment.</p>
+            {% endif %}
+        {% endif %}
+    </section>
+</article>

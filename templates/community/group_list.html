@@ -1,0 +1,36 @@
+<!-- page that lists every group. -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title> Groups | Campus Connect </title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <h1>Groups</h1>
+            <p>Join a group to post and talk with students in your major.</p>
+        </section>
+
+        <section class="group_list">
+            {% for group in groups %}
+                <article class="group card">
+                    <h2><a href="{% url 'group_detail' group.slug %}">{{ group.name }}</a></h2>
+                    <p>{{ group.description }}</p>
+                    <p class="post_meta">
+                        {{ group.members.count }} member{{ group.members.count|pluralize }}
+                        {% if group.pk in my_groups %} · You're a member{% endif %}
+                    </p>
+                </article>
+            {% empty %}
+                <p class="card">No groups yet.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>Your bookmarks | Campus Connect</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <h1>Your bookmarks</h1>
+            <p>Posts you have marked as important.</p>
+        </section>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <section class="post_feed" aria-label="Bookmarked posts">
+            {% for post in posts %}
+                {% include "community/_post.html" %}
+            {% empty %}
+                <p class="empty_feed card">You have not bookmarked any posts yet.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

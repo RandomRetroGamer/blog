@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#146b5d">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>Log in | Campus Connect</title>
+</head>
+<body class="auth_page">
+    <main class="auth_card card">
+        <a href="{% url 'home' %}" class="logo auth_brand">
+            <span class="logo_mark" aria-hidden="true">CC</span>
+            <span class="logo_text">Campus Connect</span>
+        </a>
+        <h1>Welcome back</h1>
+        <p>Log in to join the conversation and connect with your campus community.</p>
+
+        {% if form.errors %}
+            <ul class="messages">
+                <li class="error" role="alert">Your username or password wasn't recognized. Please try again.</li>
+            </ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Log in</button>
+        </form>
+
+        <p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
+        <p class="auth_footer">New to Campus Connect? <a href="{% url 'signup' %}">Create an account</a></p>
+    </main>
+</body>
+</html>

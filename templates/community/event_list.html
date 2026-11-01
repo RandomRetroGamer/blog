@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>Events | Campus Connect</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <h1>Campus events</h1>
+            <p>Join an event and connect with other students.</p>
+        </section>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+        <section class="group_list">
+            {% for event in events %}
+                <article class="card">
+                    <h2><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    <p>{{ event.description|linebreaksbr }}</p>
+                    <p class="post_meta">
+                        {{ event.starts_at|date:"M j, Y, g:i a" }} – {{ event.ends_at|date:"M j, Y, g:i a" }}
+                        · {{ event.members.count }} participant{{ event.members.count|pluralize }}
+                        {% if event.is_closed or not event.can_join %} · Closed
+                        {% elif event.is_upcoming %} · Upcoming
+                        {% else %} · Open{% endif %}
+                    </p>
+                </article>
+            {% empty %}
+                <p class="card">No events have been created yet.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

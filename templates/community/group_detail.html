@@ -1,0 +1,70 @@
+<!-- page for one group: join/leave, post in the group, and see its posts. -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title> {{ group.name }} | Campus Connect </title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <p><a href="{% url 'group_list' %}">&larr; All groups</a></p>
+            <h1>{{ group.name }}</h1>
+            <p>{{ group.description }}</p>
+            <p class="post_meta">{{ group.members.count }} member{{ group.members.count|pluralize }}</p>
+
+            {% if user.is_authenticated %}
+                {% if is_member %}
+                    <form method="post" action="{% url 'leave_group' group.slug %}">
+                        {% csrf_token %}
+                        <button type="submit">Leave group</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'join_group' group.slug %}">
+                        {% csrf_token %}
+                        <button type="submit">Join group</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </section>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <section class="composer card">
+            <h2>Post in {{ group.name }}</h2>
+            {% if is_member %}
+                <form method="post" action="{% url 'create_group_post' group.slug %}">
+                    {% csrf_token %}
+                    {{ post_form.as_p }}
+                    <button type="submit">Publish post</button>
+                </form>
+            {% elif user.is_authenticated %}
+                <p>Join this group to post in it.</p>
+            {% else %}
+                <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> or
+                    <a href="{% url 'signup' %}">create an account</a> to join this group.</p>
+            {% endif %}
+        </section>
+
+        <section class="post_feed" aria-label="Group discussions">
+            <h2>Discussions</h2>
+            {% for post in posts %}
+                {% include "community/_post.html" %}
+            {% empty %}
+                <p class="empty_feed card">No posts in this group yet.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>Create event | Campus Connect</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <h1>Create an event</h1>
+            <p>Set the event title, details, and start and end date/time.</p>
+        </section>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+        <section class="composer card">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Create event</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

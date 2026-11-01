@@ -1,0 +1,118 @@
+<!-- #region 
+ 
+file created by randy coronado
+
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+
+    
+    <meta name="theme-color" content="#146b5d">
+    <title>Campus Connect | Student discussions</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <p class="eyebrow">Your campus, a little more connected</p>
+            <h1>Good conversations<br>start here.</h1>
+            <p>A student-powered space to ask questions, share what you know, and meet people studying something completely different.</p>
+            <div class="hero_actions">
+                <a class="button_light" href="#recent-discussions">Explore discussions</a>
+                <a href="{% url 'about' %}">Get to know Campus Connect</a>
+            </div>
+        </section>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="home_layout">
+            <aside class="sidebar" aria-label="Explore Campus Connect">
+                <section class="sidebar_card">
+                    <h2>Explore the community</h2>
+                    <nav class="sidebar_links" aria-label="Community sections">
+                        <a href="{% url 'group_list' %}"><span aria-hidden="true">◈</span> Major communities</a>
+                        <a href="{% url 'event_list' %}"><span aria-hidden="true">◷</span> Campus events</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'bookmarks' %}"><span aria-hidden="true">☆</span> Your bookmarks</a>
+                        {% endif %}
+                    </nav>
+                </section>
+                <section class="sidebar_card sidebar_callout">
+                    <h3>More than your major</h3>
+                    <p>Find perspectives, advice, and collaborators beyond your usual circles.</p>
+                    <a href="{% url 'group_list' %}">Find a community →</a>
+                </section>
+            </aside>
+
+            <div class="main_feed">
+                <section class="composer card">
+                    <h2>Start a discussion</h2>
+                    <p class="composer_intro">What's on your mind? The best campus connections can start with one question.</p>
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'create_post' %}">
+                            {% csrf_token %}
+                            {{ post_form.as_p }}
+                            <button type="submit">Publish discussion</button>
+                        </form>
+                    {% else %}
+                        <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> or
+                            <a href="{% url 'signup' %}">create an account</a> to publish a post or comment.</p>
+                    {% endif %}
+                </section>
+
+                <section class="post_feed" id="recent-discussions" aria-label="Recent discussions">
+                    <div class="section_heading">
+                        <div>
+                            <h2>Recent discussions</h2>
+                            <p>Questions, ideas, and conversations from campus.</p>
+                        </div>
+                    </div>
+                    {% for post in posts %}
+                        {% include "community/_post.html" %}
+                    {% empty %}
+                        <p class="empty_feed card">No discussions yet. Be the first to start one!</p>
+                    {% endfor %}
+                </section>
+            </div>
+
+            <aside class="sidebar" aria-label="About this community">
+                <section class="sidebar_card recent_events">
+                    <h2>Recent events</h2>
+                    {% for event in recent_events %}
+                        <article class="recent_event">
+                            <h3><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a></h3>
+                            <p>{{ event.starts_at|date:"M j, Y, g:i a" }}</p>
+                        </article>
+                    {% empty %}
+                        <p>No upcoming events right now.</p>
+                    {% endfor %}
+                    <a class="recent_events_link" href="{% url 'event_list' %}">View all events →</a>
+                </section>
+                <section class="sidebar_card">
+                    <h2>A place to belong</h2>
+                    <p>Campus Connect brings students together around shared interests, campus life, and the things they want to learn from each other.</p>
+                </section>
+                <section class="sidebar_card sidebar_callout">
+                    <h3>New around here?</h3>
+                    <p>Learn why this student-built community exists and how it can help you connect across majors.</p>
+                    <a href="{% url 'about' %}">Read our story →</a>
+                </section>
+            </aside>
+        </div>
+    </main>
+
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#146b5d">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>Create an account | Campus Connect</title>
+</head>
+<body class="auth_page">
+    <main class="auth_card card">
+        <a href="{% url 'home' %}" class="logo auth_brand">
+            <span class="logo_mark" aria-hidden="true">CC</span>
+            <span class="logo_text">Campus Connect</span>
+        </a>
+        <h1>Find your people</h1>
+        <p>Create an account to meet students, join groups, and share what you're learning.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Create account</button>
+        </form>
+
+        <p class="auth_footer">Already registered? <a href="{% url 'login' %}">Log in</a></p>
+    </main>
+</body>
+</html>

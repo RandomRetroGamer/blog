@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#146b5d">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>About Campus Connect | A student-built community</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <p class="eyebrow">A student-built community</p>
+            <h1>Campus is better<br>when we connect.</h1>
+            <p>Campus Connect is a place for students to learn from each other, find community, and make connections that reach beyond a major or a classroom.</p>
+            <div class="hero_actions">
+                <a class="button_light" href="{% url 'group_list' %}">Explore student groups</a>
+                <a href="{% url 'home' %}">Join the conversation</a>
+            </div>
+        </section>
+
+        <div class="about_grid">
+            <article class="card about_story">
+                <p class="eyebrow">The idea behind it</p>
+                <h2>About us - why we made this </h2>
+                <p>We are UTRGV cs students who wanted to make it easier for students to connect with one another, especially across different majors. Campus life can feel divided into classes, departments, and familiar circles. I built Campus Connect to give students a shared place to talk, ask for help, and discover what other people are working on.</p>
+                <p>This project is for students: a welcoming starting point for meeting people outside your usual classes, finding your academic community, and sharing the small bits of knowledge that make campus life easier.</p>
+                <p>Whether you're looking for advice from another major, searching for a group to join, or just want to start a conversation, there's room for you here.</p>
+            </article>
+
+            <aside class="sidebar">
+                <section class="card sidebar_card">
+                    <h2>What you can do here</h2>
+                    <ul class="about_points">
+                        <li><span class="about_icon" aria-hidden="true">↗</span><span><strong>Meet across majors</strong>Find new perspectives beyond your own field.</span></li>
+                        <li><span class="about_icon" aria-hidden="true">◎</span><span><strong>Find your community</strong>Join groups and take part in conversations.</span></li>
+                        <li><span class="about_icon" aria-hidden="true">✦</span><span><strong>Share what you know</strong>Ask questions, offer help, and pass ideas along.</span></li>
+                    </ul>
+                </section>
+                <section class="card sidebar_card sidebar_callout">
+                    <h2>Make the first connection</h2>
+                    <p>Every useful resource and new friendship starts somewhere. Start with a post or find a group that interests you.</p>
+                    <a href="{% url 'home' %}">Browse discussions →</a>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/base_style.css' %}">
+    <title>{{ event.title }} | Campus Connect</title>
+</head>
+<body>
+    {% include "community/_header.html" %}
+
+    <main class="forum">
+        <section class="welcome">
+            <p><a href="{% url 'event_list' %}">&larr; All events</a></p>
+            <h1>{{ event.title }}</h1>
+            <p>{{ event.description|linebreaksbr }}</p>
+            <p class="post_meta">
+                Starts {{ event.starts_at|date:"M j, Y, g:i a" }} · Ends {{ event.ends_at|date:"M j, Y, g:i a" }}
+            </p>
+            <p class="post_meta">
+                {{ event.members.count }} participant{{ event.members.count|pluralize }}
+                {% if event.is_closed or not event.can_join %} · Closed
+                {% elif event.can_discuss %} · Open
+                {% else %} · Upcoming{% endif %}
+            </p>
+
+            {% if user.is_authenticated %}
+                {% if is_member %}
+                    <p>You joined this event.</p>
+                {% elif event.can_join %}
+                    <form method="post" action="{% url 'join_event' event.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">Join event</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                {% if event.can_join %}
+                    <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to join this event.</p>
+                {% endif %}
+            {% endif %}
+
+            {% if user.is_staff and not event.is_closed %}
+                <form method="post" action="{% url 'close_event' event.pk %}" onsubmit="return confirm('Close this event and stop new posts and comments?');">
+                    {% csrf_token %}
+                    <button type="submit">Close event</button>
+                </form>
+            {% endif %}
+        </section>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if event.can_discuss and is_member %}
+            <section class="composer card">
+                <h2>Share something about {{ event.title }}</h2>
+                <form method="post" action="{% url 'create_event_post' event.pk %}">
+                    {% csrf_token %}
+                    {{ post_form.as_p }}
+                    <button type="submit">Publish event post</button>
+                </form>
+            </section>
+        {% elif event.can_discuss %}
+            <section class="composer card">
+                <p>Join this event to post and comment in its discussion.</p>
+            </section>
+        {% else %}
+            <section class="composer card">
+                <p>Event discussions are closed. Posts and comments are available only while the event is active.</p>
+            </section>
+        {% endif %}
+
+        <section class="post_feed" aria-label="Event discussions">
+            <h2>Event posts</h2>
+            {% for post in posts %}
+                {% include "community/_post.html" %}
+            {% empty %}
+                <p class="empty_feed card">No event posts yet.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>
